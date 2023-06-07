@@ -7,10 +7,10 @@ def index(request):
     return HttpResponse(output)
 
 def detail(request, question_id):
-return HttpResponse(f"Essa é a pergunta de número {question_id}")
+    return HttpResponse(f"Essa é a pergunta de número {question_id}")
 
 def results(request, question_id):
-return HttpResponse(f"Resultados da pergunta de número {question_id}")
+    return HttpResponse(f"Resultados da pergunta de número {question_id}")
 
 def vote(request, question_id):
-return HttpResponse(f"Você vai votar na pergunta de número {question_id}")
+    return HttpResponse(f"Você vai votar na pergunta de número {question_id}")
