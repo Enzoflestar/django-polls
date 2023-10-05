@@ -9,7 +9,7 @@ class AccountSignupForm(forms.ModelForm):
 class Meta:
     model = User
     fields = ('username', 'email', 'data_nascimento', 'cpf', 'password', )
-    widgets = { # data personalizada a nível de formulário para exibição
+    widgets = { 
         'data_nascimento': forms.widgets.DateInput(
         attrs={'type': 'date', 'required': 'required'}
     ),
