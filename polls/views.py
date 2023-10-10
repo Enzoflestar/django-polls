@@ -1,8 +1,10 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
-from .models import Question
+from .models import Question, Choice
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView, ListView, DetailView, DeleteView, UpdateView
+from django.urls import reverse_lazy
 
 
 def index(request):
@@ -23,9 +25,6 @@ def results(request, question_id):
 def vote(request, question_id):
     return HttpResponse(f"Você vai votar na pergunta de número {question_id}")
 
-from django.views.generic import CreateView, ListView, DetailView, DeleteView, UpdateView
-from django.urls import reverse_lazy
-
 class QuestionCreateView(CreateView):
     model = Question 
     fields = ('question_text',)
@@ -45,13 +44,29 @@ class QuestionDetailView(DetailView):
 class QuestionDeleteView(LoginRequiredMixin, DeleteView):
     model = Question 
     success_url = reverse_lazy("question_list")
-    success_message ="Enquete excluída com sucesso"
+    success_message ="Enquete excluída com sucesso!"
 
     def form_valid(self, form):
         message.success(self.request, self.success_message)
         return super().form_valid(form)
 
 class QuestionUpdateView(UpdateView):
-    model = Question 
-    success_url = reverse_lazy('question-list')
-    fields = ('question-text',)
+    model = Question
+    templates_name = 'polls/question_form.html'
+    success_url = reverse_lazy('question_list')
+    success_message = 'Pergunta atualizada'
+    fields = ('question-text', 'pub_date')
+
+    def get_context_data(self, **kwargs):
+        context = super(QuestionUpdateView, self).get_context_data(**kwargs)
+        context['form_title'] = 'Editando a pergunta'
+
+        question_id = self.kwargs.get('pk')
+        choices = Choice.objects.filter(question_pk=question_id)
+        context['question_choices'] = choices
+
+    def form_valid(self, request, *args, **kwargs):
+        messages.sucess(self.request, self.success_message)
+        return super(QuestionUpdateView, self).form_valid(request, *args, **kwargs)
+
+
