@@ -1,3 +1,4 @@
+from pyexpat.errors import messages
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 from .models import Question, Choice
@@ -47,7 +48,7 @@ class QuestionDeleteView(LoginRequiredMixin, DeleteView):
     success_message ="Enquete excluída com sucesso!"
 
     def form_valid(self, form):
-        message.success(self.request, self.success_message)
+        messages.success(self.request, self.success_message)
         return super().form_valid(form)
 
 class QuestionUpdateView(UpdateView):
@@ -65,36 +66,11 @@ class QuestionUpdateView(UpdateView):
         choices = Choice.objects.filter(question_pk=question_id)
         context['question_choices'] = choices
 
+        return context
+
     def form_valid(self, request, *args, **kwargs):
         messages.sucess(self.request, self.success_message)
         return super(QuestionUpdateView, self).form_valid(request, *args, **kwargs)
-
-        
-class QuestionDeleteView(LoginRequiredMixin, DeleteView):
-        model = Question
-        template_name = 'polls/question_confirm_delete_form.html'
-        success_url = reverse_lazy('polls_all')
-        success_message = 'Pergunta excluída com sucesso!'
-
-    def form_valid(self, request, *args, **kwargs):
-        messages.success(self.request, self.success_message)
-        return super(QuestionDeleteView, self).form_valid(request, *args, **kwargs)
-
-class QuestionDetailView(DetailView):
-    model = Question
-    template_name = 'polls/question_detail.html'
-    context_object_name = 'question'
-
-class QuestionListView(ListView):
-    model = Question
-    template_name = 'polls/question_list.html'
-    context_object_name = 'questions'
-    paginate_by = 3
-    ordering = ['-pub_date']
-
-class SobreTemplateView(TemplateView):
-    template_name = 'polls/sobre.html'
-
 
 class ChoiceCreateView(CreateView):
     model = Choice
